@@ -5,6 +5,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 1. Next.js + TypeScript
 2. Tailwind
 3. PostgreSQL + Drizzle
+4. Zod
 
 ## Getting Started
 
