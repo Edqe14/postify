@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "argon2": "^0.41.1",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.33.0",
     "jose": "^5.8.0",

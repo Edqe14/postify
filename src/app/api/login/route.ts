@@ -1,5 +1,6 @@
 import { db, schema } from '@/db';
-import { hash } from 'argon2';
+import { generateUserToken } from '@/lib/generateJwt';
+import { verify } from 'argon2';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -22,26 +23,37 @@ export const POST = async (request: NextRequest) => {
 
     const existing = await db.query.users.findFirst({
       where: (user, { eq }) => eq(user.username, validated.data.username),
-      columns: {
-        id: true,
-      },
     });
 
-    if (existing) {
+    if (!existing) {
       return NextResponse.json(
-        { error: 'User already exists' },
-        { status: 409 }
+        { error: "User doesn't exists" },
+        { status: 404 }
       );
     }
 
-    const passwordHash = await hash(validated.data.password);
+    if (!(await verify(existing.password, validated.data.password))) {
+      return NextResponse.json(
+        { error: 'Invalid credentials' },
+        { status: 401 }
+      );
+    }
 
-    await db.insert(schema.users).values({
-      username: validated.data.username,
-      password: passwordHash,
+    const token = await generateUserToken(existing);
+
+    const response = NextResponse.json({
+      error: null,
+      message: `Welcome, ${existing.username}`,
     });
 
-    return NextResponse.json({ error: null, message: 'User registered' });
+    response.cookies.set({
+      name: 'token',
+      value: token,
+      httpOnly: true,
+      maxAge: 60 * 60 * 24,
+    });
+
+    return response;
   } catch (error) {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
   }
