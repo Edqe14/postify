@@ -1,5 +1,5 @@
 import { schema } from '@/db';
-import { SignJWT } from 'jose';
+import { jwtVerify, SignJWT } from 'jose';
 
 const secret = new TextEncoder().encode(process.env.APP_SECRET);
 
@@ -14,4 +14,8 @@ export const generateUserToken = (user: typeof schema.users.$inferSelect) => {
     .setIssuedAt()
     .setExpirationTime('1d')
     .sign(secret);
+};
+
+export const authenticate = (token: string) => {
+  return jwtVerify(token, secret);
 };

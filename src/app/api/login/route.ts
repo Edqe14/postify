@@ -1,7 +1,8 @@
 import { db, schema } from '@/db';
-import { generateUserToken } from '@/lib/generateJwt';
+import { generateUserToken } from '@/lib/jwt';
+import { errorResponse, successResponse } from '@/lib/responses';
 import { verify } from 'argon2';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
 
 const bodyValidator = z.object({
@@ -15,10 +16,7 @@ export const POST = async (request: NextRequest) => {
     const validated = await bodyValidator.safeParseAsync(body);
 
     if (validated.error) {
-      return NextResponse.json(
-        { error: validated.error.flatten() },
-        { status: 422 }
-      );
+      return errorResponse(validated.error.flatten(), 422);
     }
 
     const existing = await db.query.users.findFirst({
@@ -26,25 +24,15 @@ export const POST = async (request: NextRequest) => {
     });
 
     if (!existing) {
-      return NextResponse.json(
-        { error: "User doesn't exists" },
-        { status: 404 }
-      );
+      return errorResponse('User not found', 404);
     }
 
     if (!(await verify(existing.password, validated.data.password))) {
-      return NextResponse.json(
-        { error: 'Invalid credentials' },
-        { status: 401 }
-      );
+      return errorResponse('Invalid credentials', 401);
     }
 
     const token = await generateUserToken(existing);
-
-    const response = NextResponse.json({
-      error: null,
-      message: `Welcome, ${existing.username}`,
-    });
+    const response = successResponse(`Welcome, ${existing.username}`);
 
     response.cookies.set({
       name: 'token',
@@ -55,6 +43,6 @@ export const POST = async (request: NextRequest) => {
 
     return response;
   } catch (error) {
-    return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+    return errorResponse('Invalid request', 400);
   }
 };
