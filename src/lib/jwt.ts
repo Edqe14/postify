@@ -1,5 +1,5 @@
 import { schema } from '@/db';
-import { jwtVerify, SignJWT } from 'jose';
+import { JWTPayload, jwtVerify, SignJWT } from 'jose';
 
 const secret = new TextEncoder().encode(process.env.APP_SECRET);
 
@@ -16,6 +16,13 @@ export const generateUserToken = (user: typeof schema.users.$inferSelect) => {
     .sign(secret);
 };
 
+export type TokenPayload = JWTPayload & {
+  id: number;
+  username: string;
+  profile_pict: string;
+  created_at: string;
+};
+
 export const authenticate = (token: string) => {
-  return jwtVerify(token, secret);
+  return jwtVerify<TokenPayload>(token, secret);
 };
