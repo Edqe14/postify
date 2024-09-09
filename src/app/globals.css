@@ -83,4 +83,12 @@
   .container {
     @apply md:max-w-2xl lg:max-w-3xl !important;
   }
+
+  div[role='toolbar'] + div {
+    @apply flex-grow flex flex-col;
+  }
+
+  div[role='toolbar'] + div div {
+    @apply flex-grow flex flex-col;
+  }
 }

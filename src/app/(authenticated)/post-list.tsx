@@ -9,7 +9,7 @@ import { useState } from 'react';
 export const PostList = () => {
   const [page, setPage] = useState(1);
 
-  const { isPending, isError, error, data, isFetching } = useQuery({
+  const { isPending, isError, error, data } = useQuery({
     queryKey: ['posts', page],
     queryFn: () => getPosts(page),
     placeholderData: keepPreviousData,
@@ -19,18 +19,26 @@ export const PostList = () => {
 
   return (
     <section className="min-h-screen flex flex-col">
-      <section className="container relative flex-grow">
-        {isFetching && (
-          <div className="absolute inset-0 grid place-items-center">
+      <section className="container relative flex-grow flex flex-col">
+        {isPending && (
+          <div className="flex-grow grid place-items-center">
             <Spinner />
           </div>
         )}
 
-        <DynamicPagination
-          page={page}
-          pageSize={data?.metadata.perPage ?? 20}
-          totalCount={data?.metadata.total ?? 0}
-        />
+        {!isPending && data?.data.length === 0 && (
+          <div className="text-center flex-grow grid place-items-center">
+            No posts found
+          </div>
+        )}
+
+        {!isPending && (data?.data.length ?? 0) > 0 && (
+          <DynamicPagination
+            page={page}
+            pageSize={data?.metadata.perPage ?? 20}
+            totalCount={data?.metadata.total ?? 0}
+          />
+        )}
       </section>
     </section>
   );

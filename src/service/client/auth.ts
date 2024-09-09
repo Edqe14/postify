@@ -8,7 +8,26 @@ export const login = async (data: z.infer<typeof authValidator>) => {
     body: JSON.stringify(data),
   });
 
-  const json = response.json();
+  const json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(json.error);
+  }
+
+  return json;
+};
+
+export const register = async (data: z.infer<typeof authValidator>) => {
+  const response = await fetch('/api/auth/register', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+
+  const json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(json.error);
+  }
 
   return json;
 };
@@ -18,4 +37,8 @@ export const getMe = async () => {
   const json = await response.json();
 
   return json.data as TokenPayload;
+};
+
+export const logout = async () => {
+  await fetch('/api/auth/logout');
 };

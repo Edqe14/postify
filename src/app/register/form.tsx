@@ -24,24 +24,26 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { authValidator } from '@/service/server/auth';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { login } from '@/service/client/auth';
+import { login, register } from '@/service/client/auth';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 
-export const LoginForm = () => {
+const validator = authValidator.extend({
+  confirm: z.string(),
+});
+
+export const RegisterForm = () => {
   const router = useRouter();
-  const form = useForm<z.infer<typeof authValidator>>({
-    resolver: zodResolver(authValidator),
+  const form = useForm<z.infer<typeof validator>>({
+    resolver: zodResolver(validator),
   });
 
-  const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: login,
-    onSuccess: async (data) => {
-      await queryClient.invalidateQueries({ queryKey: ['user'] });
-      toast(data.message);
+    mutationFn: register,
+    onSuccess: async () => {
+      toast('Registration successful, please login to continue');
 
-      router.push('/');
+      router.push('/login');
     },
     onError: (error) => {
       toast(
@@ -53,7 +55,15 @@ export const LoginForm = () => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof authValidator>) => {
+  const onSubmit = async (values: z.infer<typeof validator>) => {
+    if (values.password !== values.confirm) {
+      form.setError('confirm', {
+        message: 'Passwords do not match',
+        type: 'deps',
+      });
+      return;
+    }
+
     await mutation.mutateAsync(values);
   };
 
@@ -62,9 +72,9 @@ export const LoginForm = () => {
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <Card className="mx-auto max-w-sm">
           <CardHeader>
-            <CardTitle className="text-2xl">Login</CardTitle>
+            <CardTitle className="text-2xl">Register</CardTitle>
             <CardDescription>
-              Enter your credentials below to login to your account
+              Enter your credentials below to create your account
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -107,14 +117,31 @@ export const LoginForm = () => {
                   )}
                 />
               </div>
+              <div className="grid gap-2">
+                <FormField
+                  control={form.control}
+                  name="confirm"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Confirm Password<span className="text-red-500">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input type="password" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
               <Button type="submit" className="w-full">
-                Login
+                Register
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{' '}
-              <Link href="/register" className="underline">
-                Sign up
+              Already have an account?{' '}
+              <Link href="/login" className="underline">
+                Sign in
               </Link>
             </div>
           </CardContent>
