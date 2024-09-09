@@ -3,7 +3,7 @@ import { authorized, compose } from '@/lib/middleware';
 import { paginate } from '@/lib/paginate';
 import { errorResponse, successResponse } from '@/lib/responses';
 import { idEncoder, inOption, parseNumber } from '@/lib/utils';
-import { PostQuery, postValidator } from '@/service/post';
+import { PostQuery, postValidator } from '@/service/server/post';
 import { desc, eq } from 'drizzle-orm';
 
 export const GET = compose(authorized, async (req) => {

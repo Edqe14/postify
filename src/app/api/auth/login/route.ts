@@ -1,7 +1,7 @@
 import { db, schema } from '@/db';
 import { generateUserToken } from '@/lib/jwt';
 import { errorResponse, successResponse } from '@/lib/responses';
-import { authValidator } from '@/service/auth';
+import { authValidator } from '@/service/server/auth';
 import { verify } from 'argon2';
 import { NextRequest } from 'next/server';
 

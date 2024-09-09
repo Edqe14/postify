@@ -2,7 +2,7 @@ import { db, schema } from '@/db';
 import { authorized, compose } from '@/lib/middleware';
 import { errorResponse, successResponse } from '@/lib/responses';
 import { idEncoder } from '@/lib/utils';
-import { postValidator } from '@/service/post';
+import { postValidator } from '@/service/server/post';
 import { eq } from 'drizzle-orm';
 
 export const GET = compose(authorized, async (req, params) => {

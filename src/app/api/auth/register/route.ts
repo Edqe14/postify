@@ -1,6 +1,6 @@
 import { db, schema } from '@/db';
 import { errorResponse, successResponse } from '@/lib/responses';
-import { authValidator } from '@/service/auth';
+import { authValidator } from '@/service/server/auth';
 import { hash } from 'argon2';
 import { NextRequest } from 'next/server';
 
