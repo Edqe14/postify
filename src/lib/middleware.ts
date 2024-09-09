@@ -3,13 +3,17 @@ import { errorResponse } from './responses';
 import { authenticate, type TokenPayload } from './jwt';
 
 export type Middleware = (
-  req: NextRequest
+  req: NextRequest,
+  params: Record<string, any>
 ) => Promise<NextResponse | null | undefined | boolean>;
 
 export const compose = (...middlewares: Middleware[]) => {
-  return async (req: NextRequest) => {
+  return async (
+    req: NextRequest,
+    { params }: { params: Record<string, any> }
+  ) => {
     for (const middleware of middlewares) {
-      const res = await middleware(req);
+      const res = await middleware(req, params);
 
       if (!(res instanceof NextResponse)) continue;
 

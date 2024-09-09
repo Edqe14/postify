@@ -1,19 +1,14 @@
 import { db, schema } from '@/db';
 import { generateUserToken } from '@/lib/jwt';
 import { errorResponse, successResponse } from '@/lib/responses';
+import { authValidator } from '@/service/auth';
 import { verify } from 'argon2';
 import { NextRequest } from 'next/server';
-import { z } from 'zod';
-
-const bodyValidator = z.object({
-  username: z.string().max(255),
-  password: z.string(),
-});
 
 export const POST = async (request: NextRequest) => {
   try {
     const body = await request.json();
-    const validated = await bodyValidator.safeParseAsync(body);
+    const validated = await authValidator.safeParseAsync(body);
 
     if (validated.error) {
       return errorResponse(validated.error.flatten(), 422);

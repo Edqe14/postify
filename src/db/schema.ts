@@ -1,15 +1,25 @@
 import { relations, sql } from 'drizzle-orm';
-import { date, pgTable, serial, text, varchar } from 'drizzle-orm/pg-core';
+import {
+  date,
+  pgTable,
+  serial,
+  text,
+  timestamp,
+  varchar,
+} from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
   id: serial('id').primaryKey(),
   username: varchar('username').unique().notNull(),
   password: varchar('password').notNull(),
   profile_pict: varchar('profile_pict'),
-  created_at: date('created_at', { mode: 'date' }).defaultNow(),
-  updated_at: date('updated_at', { mode: 'date' })
+  created_at: timestamp('created_at', {
+    mode: 'date',
+    withTimezone: true,
+  }).defaultNow(),
+  updated_at: timestamp('updated_at', { mode: 'date', withTimezone: true })
     .defaultNow()
-    .$onUpdateFn(() => sql`now()`),
+    .$onUpdateFn(() => new Date()),
 });
 
 export const posts = pgTable('posts', {
@@ -17,10 +27,13 @@ export const posts = pgTable('posts', {
   user_id: serial('user_id').references(() => users.id),
   title: varchar('title').notNull(),
   content: text('content').notNull(),
-  created_at: date('created_at', { mode: 'date' }).defaultNow(),
-  updated_at: date('updated_at', { mode: 'date' })
+  created_at: timestamp('created_at', {
+    mode: 'date',
+    withTimezone: true,
+  }).defaultNow(),
+  updated_at: timestamp('updated_at', { mode: 'date', withTimezone: true })
     .defaultNow()
-    .$onUpdateFn(() => sql`now()`),
+    .$onUpdateFn(() => new Date()),
 });
 
 export const postRelations = relations(posts, ({ one }) => ({
