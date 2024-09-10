@@ -1,5 +1,4 @@
 import React from 'react';
-
 import {
   BoldPlugin,
   CodePlugin,
@@ -10,6 +9,11 @@ import {
 import { useEditorReadOnly } from '@udecode/plate-common/react';
 
 import { Icons } from '@/components/icons';
+import { AlignDropdownMenu } from '@/components/ui/align-dropdown-menu';
+import { EmojiDropdownMenu } from '@/components/ui/emoji-dropdown-menu';
+import { LineHeightDropdownMenu } from '@/components/ui/line-height-dropdown-menu';
+import { LinkToolbarButton } from '@/components/ui/link-toolbar-button';
+import { TableDropdownMenu } from '@/components/ui/table-dropdown-menu';
 
 import { InsertDropdownMenu } from './insert-dropdown-menu';
 import { MarkToolbarButton } from './mark-toolbar-button';
@@ -61,6 +65,20 @@ export function FixedToolbarButtons() {
               <MarkToolbarButton nodeType={CodePlugin.key} tooltip="Code (⌘+E)">
                 <Icons.code />
               </MarkToolbarButton>
+            </ToolbarGroup>
+
+            <ToolbarGroup>
+              <AlignDropdownMenu />
+
+              <LineHeightDropdownMenu />
+            </ToolbarGroup>
+
+            <ToolbarGroup>
+              <LinkToolbarButton />
+
+              <TableDropdownMenu />
+
+              <EmojiDropdownMenu />
             </ToolbarGroup>
           </>
         )}

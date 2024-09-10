@@ -1,3 +1,5 @@
+'use client';
+
 import { withProps } from '@udecode/cn';
 import {
   createPlateEditor,
@@ -15,14 +17,9 @@ import { HeadingPlugin } from '@udecode/plate-heading/react';
 import { HorizontalRulePlugin } from '@udecode/plate-horizontal-rule/react';
 import { LinkPlugin } from '@udecode/plate-link/react';
 import { ImagePlugin, MediaEmbedPlugin } from '@udecode/plate-media/react';
-import { ExcalidrawPlugin } from '@udecode/plate-excalidraw/react';
 import { TogglePlugin } from '@udecode/plate-toggle/react';
 import { ColumnPlugin, ColumnItemPlugin } from '@udecode/plate-layout/react';
 import { CaptionPlugin } from '@udecode/plate-caption/react';
-import {
-  MentionPlugin,
-  MentionInputPlugin,
-} from '@udecode/plate-mention/react';
 import {
   TablePlugin,
   TableRowPlugin,
@@ -37,14 +34,7 @@ import {
   UnderlinePlugin,
   StrikethroughPlugin,
   CodePlugin,
-  SubscriptPlugin,
-  SuperscriptPlugin,
 } from '@udecode/plate-basic-marks/react';
-import {
-  FontColorPlugin,
-  FontBackgroundColorPlugin,
-  FontSizePlugin,
-} from '@udecode/plate-font';
 import { HighlightPlugin } from '@udecode/plate-highlight/react';
 import { KbdPlugin } from '@udecode/plate-kbd/react';
 import { AlignPlugin } from '@udecode/plate-alignment';
@@ -64,7 +54,7 @@ import { TrailingBlockPlugin } from '@udecode/plate-trailing-block';
 import { CommentsPlugin } from '@udecode/plate-comments/react';
 import { DocxPlugin } from '@udecode/plate-docx';
 import { CsvPlugin } from '@udecode/plate-csv';
-import { MarkdownPlugin } from '@udecode/plate-markdown';
+import { MarkdownPlugin, deserializeMd } from '@udecode/plate-markdown';
 import { JuicePlugin } from '@udecode/plate-juice';
 import { HEADING_KEYS } from '@udecode/plate-heading';
 import { DndProvider } from 'react-dnd';
@@ -74,7 +64,6 @@ import { BlockquoteElement } from '@/components/ui/blockquote-element';
 import { CodeBlockElement } from '@/components/ui/code-block-element';
 import { CodeLineElement } from '@/components/ui/code-line-element';
 import { CodeSyntaxLeaf } from '@/components/ui/code-syntax-leaf';
-import { ExcalidrawElement } from '@/components/ui/excalidraw-element';
 import { HrElement } from '@/components/ui/hr-element';
 import { ImageElement } from '@/components/ui/image-element';
 import { LinkElement } from '@/components/ui/link-element';
@@ -83,9 +72,6 @@ import { ToggleElement } from '@/components/ui/toggle-element';
 import { ColumnGroupElement } from '@/components/ui/column-group-element';
 import { ColumnElement } from '@/components/ui/column-element';
 import { HeadingElement } from '@/components/ui/heading-element';
-import { MediaEmbedElement } from '@/components/ui/media-embed-element';
-import { MentionElement } from '@/components/ui/mention-element';
-import { MentionInputElement } from '@/components/ui/mention-input-element';
 import { ParagraphElement } from '@/components/ui/paragraph-element';
 import { TableElement } from '@/components/ui/table-element';
 import { TableRowElement } from '@/components/ui/table-row-element';
@@ -107,12 +93,9 @@ import { FloatingToolbar } from '@/components/ui/floating-toolbar';
 import { FloatingToolbarButtons } from '@/components/ui/floating-toolbar-buttons';
 import { withPlaceholders } from '@/components/ui/placeholder';
 import { withDraggables } from '@/components/ui/with-draggables';
-import { EmojiInputElement } from '@/components/ui/emoji-input-element';
-import { TooltipProvider } from '@/components/ui/tooltip';
-import { Value } from '@udecode/plate-common';
-import { useMemo } from 'react';
+import { MutableRefObject, useMemo } from 'react';
 
-export const createEditor = (content: Value) =>
+export const createEditor = (content: string) =>
   createPlateEditor({
     plugins: [
       BlockquotePlugin,
@@ -124,14 +107,12 @@ export const createEditor = (content: Value) =>
         render: { afterEditable: () => <LinkFloatingToolbar /> },
       }),
       ImagePlugin,
-      ExcalidrawPlugin,
       TogglePlugin,
       ColumnPlugin,
       MediaEmbedPlugin,
       CaptionPlugin.configure({
         options: { plugins: [ImagePlugin, MediaEmbedPlugin] },
       }),
-      MentionPlugin,
       TablePlugin,
       TodoListPlugin,
       DatePlugin,
@@ -140,11 +121,6 @@ export const createEditor = (content: Value) =>
       UnderlinePlugin,
       StrikethroughPlugin,
       CodePlugin,
-      SubscriptPlugin,
-      SuperscriptPlugin,
-      FontColorPlugin,
-      FontBackgroundColorPlugin,
-      FontSizePlugin,
       HighlightPlugin,
       KbdPlugin,
       AlignPlugin.configure({
@@ -240,7 +216,6 @@ export const createEditor = (content: Value) =>
           [CodeBlockPlugin.key]: CodeBlockElement,
           [CodeLinePlugin.key]: CodeLineElement,
           [CodeSyntaxPlugin.key]: CodeSyntaxLeaf,
-          [ExcalidrawPlugin.key]: ExcalidrawElement,
           [HorizontalRulePlugin.key]: HrElement,
           [ImagePlugin.key]: ImageElement,
           [LinkPlugin.key]: LinkElement,
@@ -253,9 +228,6 @@ export const createEditor = (content: Value) =>
           [HEADING_KEYS.h4]: withProps(HeadingElement, { variant: 'h4' }),
           [HEADING_KEYS.h5]: withProps(HeadingElement, { variant: 'h5' }),
           [HEADING_KEYS.h6]: withProps(HeadingElement, { variant: 'h6' }),
-          [MediaEmbedPlugin.key]: MediaEmbedElement,
-          [MentionPlugin.key]: MentionElement,
-          [MentionInputPlugin.key]: MentionInputElement,
           [ParagraphPlugin.key]: ParagraphElement,
           [TablePlugin.key]: TableElement,
           [TableRowPlugin.key]: TableRowElement,
@@ -270,8 +242,6 @@ export const createEditor = (content: Value) =>
           [ItalicPlugin.key]: withProps(PlateLeaf, { as: 'em' }),
           [KbdPlugin.key]: KbdLeaf,
           [StrikethroughPlugin.key]: withProps(PlateLeaf, { as: 's' }),
-          [SubscriptPlugin.key]: withProps(PlateLeaf, { as: 'sub' }),
-          [SuperscriptPlugin.key]: withProps(PlateLeaf, { as: 'sup' }),
           [UnderlinePlugin.key]: withProps(PlateLeaf, { as: 'u' }),
         })
       ),
@@ -279,17 +249,37 @@ export const createEditor = (content: Value) =>
     value: content,
   });
 
-export function PlateEditor({ content = [] }: { content?: Value }) {
-  const editor = useMemo(() => createEditor(content), [content]);
+export function PlateEditor({
+  content = '',
+  contentRef,
+}: {
+  content?: string;
+  contentRef?: MutableRefObject<string>;
+}) {
+  const editor = useMemo(() => {
+    const editorL = createEditor('');
+    editorL.tf.setValue(editorL.api.markdown.deserialize(content));
+
+    return editorL;
+  }, [content, contentRef]);
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <Plate editor={editor}>
+      <Plate
+        editor={editor}
+        onChange={() => {
+          if (contentRef) {
+            const md = editor.api.markdown.serialize();
+
+            contentRef.current = md;
+          }
+        }}
+      >
         <FixedToolbar>
           <FixedToolbarButtons />
         </FixedToolbar>
 
-        <Editor className="focus:outline-none border-none" />
+        <Editor className="focus:outline-none border-none flex-grow" />
 
         <FloatingToolbar>
           <FloatingToolbarButtons />

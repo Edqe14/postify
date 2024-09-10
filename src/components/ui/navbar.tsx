@@ -28,7 +28,7 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="h-16 border-b fixed top-0 inset-x-0">
+    <nav className="h-16 border-b fixed top-0 inset-x-0 z-20 bg-inherit">
       <div className="container h-full flex items-center justify-between">
         <Link href="/" className="font-bold text-lg">
           Postify
@@ -56,7 +56,9 @@ export const Navbar = () => {
             <DropdownMenuContent sideOffset={8}>
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Profile</DropdownMenuItem>
+              <Link href="/profile">
+                <DropdownMenuItem>Profile</DropdownMenuItem>
+              </Link>
               <DropdownMenuItem
                 onClick={signOut}
                 className="text-red-500 focus:text-red-600"

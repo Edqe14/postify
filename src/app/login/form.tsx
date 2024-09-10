@@ -41,7 +41,7 @@ export const LoginForm = () => {
       await queryClient.invalidateQueries({ queryKey: ['user'] });
       toast(data.message);
 
-      router.push('/');
+      await router.push('/');
     },
     onError: (error) => {
       toast(

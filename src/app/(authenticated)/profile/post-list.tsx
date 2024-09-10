@@ -1,25 +1,25 @@
 'use client';
 
+import { PostCard } from '@/components/post-card';
 import { DynamicPagination } from '@/components/ui/dynamic-pagination';
 import { Spinner } from '@/components/ui/spinner';
-import { getPosts } from '@/service/client/post';
+import { getMyPosts } from '@/service/client/post';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { PostCard } from '@/components/post-card';
 import { useSearchParams } from 'next/navigation';
 
-export const PostList = () => {
+export const MyPostList = () => {
   const searchParam = useSearchParams();
   const page = parseInt(searchParam.get('page') ?? '1', 10);
 
   const { isPending, data } = useQuery({
     queryKey: ['posts', page],
-    queryFn: () => getPosts(page),
+    queryFn: () => getMyPosts(page),
     placeholderData: keepPreviousData,
   });
 
   return (
-    <section className="min-h-screen flex flex-col">
-      <section className="container relative flex-grow flex flex-col py-8 space-y-8 border-x">
+    <section className="flex flex-col">
+      <section className="container relative flex-grow flex flex-col py-8 space-y-8">
         {isPending && (
           <div className="flex-grow grid place-items-center">
             <Spinner />

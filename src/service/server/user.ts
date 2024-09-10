@@ -1,3 +1,4 @@
+import { db } from '@/db';
 import { authenticate } from '@/lib/jwt';
 
 export const getMe = async (token?: string) => {
@@ -5,5 +6,14 @@ export const getMe = async (token?: string) => {
 
   const userToken = await authenticate(token).catch(() => null);
 
-  return userToken;
+  if (!userToken) return null;
+
+  const user = await db.query.users.findFirst({
+    where: (user, { eq }) => eq(user.id, userToken.payload.id),
+    columns: {
+      password: false,
+    },
+  });
+
+  return user;
 };

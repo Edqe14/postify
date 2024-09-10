@@ -3,10 +3,23 @@ import postgres from 'postgres';
 import * as schema from './schema';
 
 const connectionString = process.env.DATABASE_URL!;
-const client = postgres(connectionString);
+const client = globalThis.dbClient ?? postgres(connectionString);
 
-export const db = drizzle(client, {
-  schema,
-  logger: process.env.NODE_ENV === 'development',
-});
+export const db =
+  globalThis.db ??
+  drizzle(client, {
+    schema,
+    logger: process.env.NODE_ENV === 'development',
+  });
+
+if (process.env.NODE_ENV === 'development') {
+  globalThis.dbClient = client;
+  globalThis.db = db;
+}
+
+declare const globalThis: {
+  dbClient: ReturnType<typeof postgres>;
+  db: ReturnType<typeof drizzle<typeof schema>>;
+} & typeof global;
+
 export { schema };

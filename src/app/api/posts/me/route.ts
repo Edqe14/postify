@@ -1,9 +1,9 @@
 import { db, schema } from '@/db';
 import { authorized, compose } from '@/lib/middleware';
 import { paginate } from '@/lib/paginate';
-import { errorResponse, successResponse } from '@/lib/responses';
+import { successResponse } from '@/lib/responses';
 import { idEncoder, inOption, parseNumber } from '@/lib/utils';
-import { PostQuery, postValidator } from '@/service/server/post';
+import { PostQuery } from '@/service/server/post';
 import { desc, eq } from 'drizzle-orm';
 
 export const GET = compose(authorized, async (req) => {
@@ -26,6 +26,7 @@ export const GET = compose(authorized, async (req) => {
         },
       })
       .from(schema.posts)
+      .where(eq(schema.posts.user_id, req.authenticated!.id))
       .innerJoin(schema.users, eq(schema.posts.user_id, schema.users.id))
       .orderBy(desc(schema.posts.created_at)),
     page,
@@ -37,32 +38,4 @@ export const GET = compose(authorized, async (req) => {
   });
 
   return successResponse('Get posts successful', posts);
-});
-
-export const POST = compose(authorized, async (req) => {
-  try {
-    const body = await req.json();
-    const validated = await postValidator.safeParseAsync(body);
-
-    if (!validated.success) {
-      return errorResponse(validated.error.flatten(), 422);
-    }
-
-    const [created] = await db
-      .insert(schema.posts)
-      .values({
-        ...validated.data,
-        user_id: req.authenticated!.id,
-      })
-      .returning();
-
-    const masked = {
-      ...created,
-      id: idEncoder.encode([created.id]),
-    };
-
-    return successResponse('Created post successfuly', masked);
-  } catch (err) {
-    return errorResponse('Invalid request', 400);
-  }
 });

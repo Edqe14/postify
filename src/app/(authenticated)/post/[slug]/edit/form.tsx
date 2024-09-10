@@ -2,26 +2,37 @@
 
 import { PlateEditor } from '@/components/rich-text';
 import { Button } from '@/components/ui/button';
-import { createPost } from '@/service/client/post';
+import { updatePost } from '@/service/client/post';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
-export const NewForm = () => {
+export const EditForm = ({
+  title: upTitle,
+  content,
+  slug,
+}: {
+  slug: string;
+  title: string;
+  content: string;
+}) => {
   const router = useRouter();
-  const [title, setTitle] = useState('');
-  const contentRef = useRef<string>('');
+  const [title, setTitle] = useState(upTitle);
+  const contentRef = useRef<string>(content);
 
-  const editor = useMemo(() => <PlateEditor contentRef={contentRef} />, []);
+  const editor = useMemo(
+    () => <PlateEditor contentRef={contentRef} content={content} />,
+    []
+  );
 
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: () => createPost(title, contentRef.current),
+    mutationFn: () => updatePost(slug, title, contentRef.current),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
-      toast('Post created');
-      router.push('/');
+      toast('Post updated');
+      router.push(`/post/${slug}`);
     },
   });
 
@@ -48,7 +59,7 @@ export const NewForm = () => {
       </div>
 
       <Button onClick={submit} disabled={mutation.isPending}>
-        Post
+        Save
       </Button>
     </>
   );
