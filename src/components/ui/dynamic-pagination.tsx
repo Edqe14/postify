@@ -172,7 +172,7 @@ export function DynamicPagination({
         <PaginationContent className="max-sm:gap-0">
           <PaginationItem>
             <PaginationPrevious
-              size="icon"
+              size="sm"
               href={buildLink(Math.max(page - 1, 1))}
               aria-disabled={page === 1}
               tabIndex={page === 1 ? -1 : undefined}
@@ -184,7 +184,7 @@ export function DynamicPagination({
           {renderPageNumbers()}
           <PaginationItem>
             <PaginationNext
-              size="icon"
+              size="sm"
               href={buildLink(Math.min(page + 1, totalPageCount))}
               aria-disabled={page === totalPageCount}
               tabIndex={page === totalPageCount ? -1 : undefined}
