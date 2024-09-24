@@ -89,7 +89,11 @@ export function DynamicPagination({
       for (let i = 1; i <= totalPageCount; i++) {
         items.push(
           <PaginationItem key={i}>
-            <PaginationLink href={buildLink(i)} isActive={page === i}>
+            <PaginationLink
+              size="icon"
+              href={buildLink(i)}
+              isActive={page === i}
+            >
               {i}
             </PaginationLink>
           </PaginationItem>
@@ -98,7 +102,7 @@ export function DynamicPagination({
     } else {
       items.push(
         <PaginationItem key={1}>
-          <PaginationLink href={buildLink(1)} isActive={page === 1}>
+          <PaginationLink size="icon" href={buildLink(1)} isActive={page === 1}>
             1
           </PaginationLink>
         </PaginationItem>
@@ -118,7 +122,11 @@ export function DynamicPagination({
       for (let i = start; i <= end; i++) {
         items.push(
           <PaginationItem key={i}>
-            <PaginationLink href={buildLink(i)} isActive={page === i}>
+            <PaginationLink
+              size="icon"
+              href={buildLink(i)}
+              isActive={page === i}
+            >
               {i}
             </PaginationLink>
           </PaginationItem>
@@ -136,6 +144,7 @@ export function DynamicPagination({
       items.push(
         <PaginationItem key={totalPageCount}>
           <PaginationLink
+            size="icon"
             href={buildLink(totalPageCount)}
             isActive={page === totalPageCount}
           >
@@ -163,6 +172,7 @@ export function DynamicPagination({
         <PaginationContent className="max-sm:gap-0">
           <PaginationItem>
             <PaginationPrevious
+              size="sm"
               href={buildLink(Math.max(page - 1, 1))}
               aria-disabled={page === 1}
               tabIndex={page === 1 ? -1 : undefined}
@@ -174,6 +184,7 @@ export function DynamicPagination({
           {renderPageNumbers()}
           <PaginationItem>
             <PaginationNext
+              size="sm"
               href={buildLink(Math.min(page + 1, totalPageCount))}
               aria-disabled={page === totalPageCount}
               tabIndex={page === totalPageCount ? -1 : undefined}

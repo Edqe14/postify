@@ -54,7 +54,9 @@ function Calendar({
         ...classNames,
       }}
       components={{
+        // @ts-ignore
         IconLeft: () => <ChevronLeft className="size-4" />,
+        // @ts-ignore
         IconRight: () => <ChevronRight className="size-4" />,
       }}
       showOutsideDays={showOutsideDays}

@@ -18,7 +18,7 @@ export const PostList = () => {
   });
 
   return (
-    <section className="min-h-screen flex flex-col">
+    <section className="flex-grow flex flex-col">
       <section className="container relative flex-grow flex flex-col py-8 space-y-8 border-x">
         {isPending && (
           <div className="flex-grow grid place-items-center">
