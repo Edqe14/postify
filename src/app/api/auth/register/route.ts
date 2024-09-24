@@ -33,6 +33,7 @@ export const POST = async (request: NextRequest) => {
 
     return successResponse('User registered');
   } catch (error) {
+    console.error(error);
     return errorResponse('Invalid request');
   }
 };
