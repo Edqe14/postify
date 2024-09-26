@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   BoldPlugin,
   CodePlugin,
@@ -6,7 +6,7 @@ import {
   StrikethroughPlugin,
   UnderlinePlugin,
 } from '@udecode/plate-basic-marks/react';
-import { useEditorReadOnly } from '@udecode/plate-common/react';
+import { useEditorReadOnly, useEditorRef } from '@udecode/plate-common/react';
 
 import { Icons } from '@/components/icons';
 import { AlignDropdownMenu } from '@/components/ui/align-dropdown-menu';
@@ -18,11 +18,25 @@ import { TableDropdownMenu } from '@/components/ui/table-dropdown-menu';
 import { InsertDropdownMenu } from './insert-dropdown-menu';
 import { MarkToolbarButton } from './mark-toolbar-button';
 import { ModeDropdownMenu } from './mode-dropdown-menu';
-import { ToolbarGroup } from './toolbar';
+import { ToolbarButton, ToolbarGroup } from './toolbar';
 import { TurnIntoDropdownMenu } from './turn-into-dropdown-menu';
+import { ImagePlugin } from '@udecode/plate-media';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from './dialog';
+import ImageUpload from './image-upload';
+import { Transforms } from 'slate';
 
 export function FixedToolbarButtons() {
   const readOnly = useEditorReadOnly();
+  const editor = useEditorRef();
+
+  const [modalOpen, setModalOpen] = useState(false);
 
   return (
     <div className="w-full overflow-hidden">
@@ -79,6 +93,31 @@ export function FixedToolbarButtons() {
               <TableDropdownMenu />
 
               <EmojiDropdownMenu />
+
+              <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+                <DialogTrigger>
+                  <ToolbarButton>
+                    <Icons.image />
+                  </ToolbarButton>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Upload image</DialogTitle>
+                  </DialogHeader>
+
+                  <ImageUpload
+                    onUploadComplete={(url) => {
+                      editor.insertNode({
+                        type: ImagePlugin.key,
+                        url,
+                        children: [{ text: '' }],
+                      });
+
+                      setModalOpen(false);
+                    }}
+                  />
+                </DialogContent>
+              </Dialog>
             </ToolbarGroup>
           </>
         )}

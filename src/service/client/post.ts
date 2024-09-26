@@ -24,6 +24,10 @@ export const createPost = async (title: string, content: string) => {
     body: JSON.stringify({ title, content }),
   });
 
+  if (!response.ok) {
+    throw new Error('Failed to create post');
+  }
+
   return response.json();
 };
 

@@ -69,7 +69,7 @@ export default async function PostDetailPage({
             </p>
           </div>
         </div>
-        <div className="prose dark:prose-invert">
+        <div className="prose dark:prose-invert w-full max-w-[unset]">
           <Markdown
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeHighlight, rehypeSanitize]}
